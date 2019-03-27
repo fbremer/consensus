@@ -81,22 +81,39 @@ def main():
     parser = HelpAndQuitOnFailParser()
 
     # files/directories
-    parser.add_argument('-i', '--in_directory', default="input",
-                        help='path to input directory')
+    parser.add_argument('-i', '--input', default="alignment.fasta",
+                        help='path to input file, or input directory if using batch mode')
 
     parser.add_argument('-o', '--out_file', default="consensus.fasta",
                         help='path to output file')
 
+    parser.add_argument('--batch_mode', action='store_true',
+                        help='take an input directory instead of input file')
+
     args = parser.parse_args()
 
     with open(args.out_file, "wt") as f:
-        for filename in os.listdir(args.in_directory):
+        # batch mode
+        if args.batch_mode:
+            for filename in os.listdir(args.input):
 
-            sample_name, extension = os.path.splitext(filename)
-            if extension not in {".fasta", ".fna"}:
-                continue
+                sample_name, extension = os.path.splitext(filename)
+                if extension not in {".fasta", ".fna"}:
+                    continue
 
-            in_aln = AlignIO.read(os.path.join(args.in_directory, filename), "fasta")
+                in_aln = AlignIO.read(os.path.join(args.input, filename), "fasta")
+
+                con_str = consensus(in_aln)
+                con_seq = Seq(con_str, alphabet=IUPAC.ambiguous_dna)
+                con_rec = SeqRecord(con_seq, id=sample_name, name=sample_name, description="")
+
+                f.write(con_rec.format("fasta"))
+
+        # single file mode
+        else:
+            sample_name, _ = os.path.splitext(args.input)
+
+            in_aln = AlignIO.read(args.input, "fasta")
 
             con_str = consensus(in_aln)
             con_seq = Seq(con_str, alphabet=IUPAC.ambiguous_dna)
