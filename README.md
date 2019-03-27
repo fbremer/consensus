@@ -1,2 +1,3 @@
 # consensus
-collapse multiple aligned sequences using ambiguity bases. no base calling, but supports masking bases.
+Collapses multiple aligned sequences using iupac ambiguity bases. No base calling or anything. '-' and 'n' are ignored
+unless found in every sequence in the alignment.

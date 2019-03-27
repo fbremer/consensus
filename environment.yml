@@ -1,0 +1,6 @@
+name: consensus
+channels:
+- conda-forge
+dependencies:
+- python=3
+- biopython
