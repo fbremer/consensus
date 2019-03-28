@@ -1,11 +1,15 @@
 # consensus
 
-Collapses multiple aligned sequences using iupac ambiguity bases, except `n` which is treated as a mask by default. No base calling or anything. `-` and `n` are ignored unless found in every sequence in the alignment. By default, takes one fasta file and outputs one fasta file. In batch mode, processes all fasta files in the input directory with `.fasta` or `.fna` extension and outputs all the consensus sequences in one output fasta file.
+`consensus.py` collapses multiple aligned sequences using iupac ambiguity bases, with the exception of `n` discussed below. No base calling or cutoffs or anything.
+
+`-` and `n` are treated specially and similarly. By default both use an *all* rule, where they are ignored unless all sequences contain the symbol at that location. They each have a flag to change to an *any* rule, where if any of the symbol is found at a location, the consensus will take that symbol. If `--any_gap` and `--any_n` are set, gaps take precedence.
+
+By default, `consensus.py` takes one fasta file and outputs one fasta file. In batch mode, it processes all files in the input directory with a `.fasta` or `.fna` extension as fasta's and outputs all the consensus sequences in one output fasta file.
 
 ## usage
 ```
-usage: consensus.py [-h] [-i INPUT] [-o OUT_FILE] [--batch_mode]
-                    [--standard_n_treatment]
+usage: consensus.py [-h] [-i INPUT] [-o OUT_FILE] [--batch_mode] [--any_n]
+                    [--any_gap]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -15,8 +19,9 @@ optional arguments:
   -o OUT_FILE, --out_file OUT_FILE
                         path to output file
   --batch_mode          take an input directory instead of input file
-  --standard_n_treatment
-                        treat n as iupac code instead of mask. (n in output
-                        results from any seqs containing n instead of all seqs
-                        containing n)
+  --any_n               By default, if *all* bases at a location are 'n', the
+                        consensus will be a 'n'. This flag changes that rule
+                        to return an 'n' if *any* 'n' are found at that loc.
+  --any_gap             Same as --any_n above. If --any_gap and --any_n are
+                        set, gaps take precedence
 ```

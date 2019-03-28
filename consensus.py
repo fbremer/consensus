@@ -11,8 +11,8 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
 
-def consensus(aln, standard_n_treatment=False):
-    # precompute dictionaries on first run
+def consensus(aln, any_n=False, any_gap=False):
+    # pre-compute dictionaries on first run
     if "collapse_iupac" not in consensus.__dict__:
         # sorted tuples map to iupac codes
         consensus.collapse_iupac = {
@@ -43,27 +43,28 @@ def consensus(aln, standard_n_treatment=False):
         # expand iupac code to base set
         base_set = set.union(*[consensus.expand_iupac[seq[loc].lower()] for seq in aln])
 
-        # with standard treatment, any 'n' in input will result in 'n' in output
-        if standard_n_treatment and 'n' in base_set:
-            con += 'n'
-            continue
-
-        # if vertical '-', return '-'
-        if base_set == {'-'}:
+        # with any_gap, any '-' in input will result in '-' in output
+        if any_gap and '-' in base_set:
             con += '-'
             continue
-
-        # if vertical 'n', return 'n'
-        if base_set == {'n'}:
-            con += 'n'
+        # without any_gap, if vertical '-', return '-'
+        elif not any_gap and base_set == {'-'}:
+            con += '-'
             continue
-
         # if not vertical '-', ignore '-'
-        if '-' in base_set:
+        elif '-' in base_set:
             base_set.remove('-')
 
+        # with any_n, any 'n' in input will result in 'n' in output
+        if any_n and 'n' in base_set:
+            con += 'n'
+            continue
+        # without any_n, if vertical 'n', return 'n'
+        elif not any_n and base_set == {'n'}:
+            con += 'n'
+            continue
         # if not vertical 'n', ignore 'n'
-        if 'n' in base_set:
+        elif 'n' in base_set:
             base_set.remove('n')
 
         # collapse base_set to iupac code
@@ -95,9 +96,13 @@ def main():
     parser.add_argument('--batch_mode', action='store_true',
                         help='take an input directory instead of input file')
 
-    parser.add_argument('--standard_n_treatment', action='store_true',
-                        help=('treat n as iupac code instead of mask. '
-                              '(n in output results from any seqs containing n instead of all seqs containing n)'))
+    parser.add_argument('--any_n', action='store_true',
+                        help=("By default, if *all* bases at a location are 'n', the consensus will be a 'n'. "
+                              "This flag changes that rule to return an 'n' if *any* 'n' are found at that loc."))
+
+    parser.add_argument('--any_gap', action='store_true',
+                        help=("Same as --any_n above. "
+                              "If --any_gap and --any_n are set, gaps take precedence"))
 
     args = parser.parse_args()
 
@@ -112,7 +117,7 @@ def main():
 
                 in_aln = AlignIO.read(os.path.join(args.input, filename), "fasta")
 
-                con_str = consensus(in_aln, args.standard_n_treatment)
+                con_str = consensus(in_aln, any_n=args.any_n, any_gap=args.any_gap)
                 con_seq = Seq(con_str, alphabet=IUPAC.ambiguous_dna)
                 con_rec = SeqRecord(con_seq, id=sample_name, name=sample_name, description="")
 
@@ -124,7 +129,7 @@ def main():
 
             in_aln = AlignIO.read(args.input, "fasta")
 
-            con_str = consensus(in_aln, args.standard_n_treatment)
+            con_str = consensus(in_aln, any_n=args.any_n, any_gap=args.any_gap)
             con_seq = Seq(con_str, alphabet=IUPAC.ambiguous_dna)
             con_rec = SeqRecord(con_seq, id=sample_name, name=sample_name, description="")
 
