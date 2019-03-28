@@ -5,6 +5,7 @@ Collapses multiple aligned sequences using iupac ambiguity bases. No base callin
 ## usage
 ```
 usage: consensus.py [-h] [-i INPUT] [-o OUT_FILE] [--batch_mode]
+                    [--standard_n_treatment]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -14,5 +15,8 @@ optional arguments:
   -o OUT_FILE, --out_file OUT_FILE
                         path to output file
   --batch_mode          take an input directory instead of input file
-
+  --standard_n_treatment
+                        treat n as iupac code instead of mask. (n in output
+                        results from any seqs containing n instead of all seqs
+                        containing n)
 ```

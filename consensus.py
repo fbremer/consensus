@@ -11,7 +11,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
 
-def consensus(aln):
+def consensus(aln, standard_n_treatment=False):
     # precompute dictionaries on first run
     if "collapse_iupac" not in consensus.__dict__:
         # sorted tuples map to iupac codes
@@ -42,6 +42,11 @@ def consensus(aln):
     for loc in range(aln.get_alignment_length()):
         # expand iupac code to base set
         base_set = set.union(*[consensus.expand_iupac[seq[loc].lower()] for seq in aln])
+
+        # with standard treatment, any 'n' in input will result in 'n' in output
+        if standard_n_treatment and 'n' in base_set:
+            con += 'n'
+            continue
 
         # if vertical '-', return '-'
         if base_set == {'-'}:
@@ -90,6 +95,10 @@ def main():
     parser.add_argument('--batch_mode', action='store_true',
                         help='take an input directory instead of input file')
 
+    parser.add_argument('--standard_n_treatment', action='store_true',
+                        help=('treat n as iupac code instead of mask. '
+                              '(n in output results from any seqs containing n instead of all seqs containing n)'))
+
     args = parser.parse_args()
 
     with open(args.out_file, "wt") as f:
@@ -103,7 +112,7 @@ def main():
 
                 in_aln = AlignIO.read(os.path.join(args.input, filename), "fasta")
 
-                con_str = consensus(in_aln)
+                con_str = consensus(in_aln, args.standard_n_treatment)
                 con_seq = Seq(con_str, alphabet=IUPAC.ambiguous_dna)
                 con_rec = SeqRecord(con_seq, id=sample_name, name=sample_name, description="")
 
@@ -115,7 +124,7 @@ def main():
 
             in_aln = AlignIO.read(args.input, "fasta")
 
-            con_str = consensus(in_aln)
+            con_str = consensus(in_aln, args.standard_n_treatment)
             con_seq = Seq(con_str, alphabet=IUPAC.ambiguous_dna)
             con_rec = SeqRecord(con_seq, id=sample_name, name=sample_name, description="")
 
