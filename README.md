@@ -2,7 +2,7 @@
 
 `consensus.py` collapses multiple aligned sequences using iupac ambiguity bases, with the exception of `n` discussed below. No base calling or cutoffs or anything.
 
-`-` and `n` are treated specially and similarly. By default both use an *all* rule, where they are ignored unless all sequences contain the symbol at that location. They each have a flag to change to an *any* rule, where if any of the symbol is found at a location, the consensus will take that symbol. If `--any_gap` and `--any_n` are set, gaps take precedence.
+`-` and `n` are treated specially and similarly. By default both use an **all** rule, where they are ignored unless all sequences contain the symbol at that location. They each have a flag to change to an **any** rule, where if any of the symbol is found at a location, the consensus will take that symbol. If both `--any_gap` and `--any_n` are set, gaps take precedence.
 
 By default, `consensus.py` takes one fasta file and outputs one fasta file. In batch mode, it processes all files in the input directory with a `.fasta` or `.fna` extension as fasta's and outputs all the consensus sequences in one output fasta file.
 
