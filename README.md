@@ -1,4 +1,4 @@
-# consensus
+# strict_iupac_consensus
 
 `consensus.py` collapses multiple aligned sequences using iupac ambiguity bases, with the exception of `n` discussed below. No base calling or cutoffs or anything.
 
