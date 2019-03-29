@@ -1,6 +1,6 @@
 # strict_iupac_consensus
 
-`consensus.py` collapses multiple aligned sequences into strict consensus sequences using IUPAC ambiguity bases. By strict, we mean that it does not use any conventions for determining whether an IUPAC code is introduced (e.g. minimum required occurrences of minor bases, such as in [Cavener 1987](https://academic.oup.com/nar/article-lookup/doi/10.1093/nar/15.4.1353). If >1 base is present at a given site, `consensus.py` will introduce an ambiguity. By default, it will also ignore `-` and `n` characters if other bases are present at a given position (see below).  
+`consensus.py` collapses multiple aligned sequences into strict consensus sequences using IUPAC ambiguity bases. By strict, we mean that it does not use any conventions for determining whether an IUPAC code is introduced (e.g. minimum required occurrences of minor bases, such as in [Cavener 1987](https://academic.oup.com/nar/article-lookup/doi/10.1093/nar/15.4.1353), which is used by [Bio.motifs](http://biopython.org/DIST/docs/tutorial/Tutorial.html) in BioPython). If >1 base is present at a given site, `consensus.py` will introduce an ambiguity. By default, it will also ignore `-` and `n` characters if other bases are present at a given position (see below).  
 
 By default, `consensus.py` takes one fasta file and outputs one fasta file. In batch mode, it processes all files in the input directory with a `.fasta` or `.fna` extension as fasta's and outputs all the consensus sequences in one output fasta file.
 
